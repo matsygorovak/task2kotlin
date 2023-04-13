@@ -2,21 +2,20 @@ import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.CmdLineException
 import org.kohsuke.args4j.CmdLineParser
 import org.kohsuke.args4j.Option
-import java.io.File
 import java.io.IOException
 
 class Parser {
 
-    @Option(name = "-d", usage = "the output files should be named “ofile, ofile2, ofile3...“")
+    @Option(name = "-d", usage = "the output files should be named “ofile1, ofile2, ofile3...“")
     private var nameOfFiles: Boolean = false
 
-    @Option(name = "-l", usage = "size of output files in lines", forbids = ["-c", "-n"])
+    @Option(name = "-l", usage = "size of output files in lines")
     private var sizeInLines: Int = 100
 
-    @Option(name = "-c", usage = "size of output files in chars", forbids = ["-l", "-n"])
+    @Option(name = "-c", usage = "size of output files in chars")
     private var sizeInChars: Int? = null
 
-    @Option(name = "-n", usage = "count of output files", forbids = ["-c", "-l"])
+    @Option(name = "-n", usage = "count of output files")
     private var countOfFiles: Int? = null
 
     @Option(name = "-o", usage = "sets the base name of the output file")
@@ -26,7 +25,6 @@ class Parser {
     private var inputFile: String? = null
 
     fun parseArgs(args: Array<String>) {
-
         val parser = CmdLineParser(this)
         try {
             parser.parseArgument(args.toList())
@@ -35,7 +33,6 @@ class Parser {
         } catch (e: CmdLineException) {
             System.err.println(e.message)
             parser.printUsage(System.err)
-            return
         } catch (e: IllegalArgumentException) {
             System.err.println(e.message)
         } catch (e: IOException) {

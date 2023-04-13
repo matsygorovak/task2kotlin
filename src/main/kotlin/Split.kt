@@ -1,4 +1,5 @@
 import java.io.File
+import java.io.IOException
 
 class Split() {
     fun run(
@@ -9,8 +10,14 @@ class Split() {
         nameOfOutFiles: String?,
         inputFile: String?
     ) {
-        if (inputFile == null) {
-            throw IllegalArgumentException()
+        if (!File(inputFile!!).exists()) {
+            throw IllegalArgumentException("Имя файла указано неверно")
+        }
+        if ((sizeInLines != null && sizeInChars != null && sizeInLines != 100)
+            || (sizeInLines != null && countOfFiles != null && sizeInLines != 100)
+            || (sizeInChars != null && countOfFiles != null)
+        ) {
+            throw IOException("Одновременно указано несколько флагов управления размером")
         }
         val oFile = nameOfOutFiles(inputFile, nameOfOutFiles)
         val list = if (sizeInChars != null) {
@@ -22,7 +29,7 @@ class Split() {
         }
         if (nameOfFiles) {
             for (i in 1..list.size + 1) {
-                var file = File(oFile + "$i")
+                val file = File(oFile + "$i")
                 file.createNewFile()
                 file.writeText(list[i - 1])
             }
@@ -32,7 +39,7 @@ class Split() {
             for (i in 0..list.size) {
                 s1 = ('a' + i / 26).toString()
                 s2 = ('a' + i % 26).toString()
-                var file = File(oFile + "$s1$s2")
+                val file = File(oFile + "$s1$s2")
                 file.createNewFile()
                 file.writeText(list[i])
             }
