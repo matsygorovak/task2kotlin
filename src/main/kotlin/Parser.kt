@@ -28,8 +28,7 @@ class Parser {
         val parser = CmdLineParser(this)
         try {
             parser.parseArgument(args.toList())
-            val split = Split()
-            split.run(nameOfFiles, sizeInLines, sizeInChars, countOfFiles, nameOfOutFiles, inputFile)
+            Split(nameOfFiles, sizeInLines, sizeInChars, countOfFiles, nameOfOutFiles, inputFile).run()
         } catch (e: CmdLineException) {
             System.err.println(e.message)
             parser.printUsage(System.err)

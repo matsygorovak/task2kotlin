@@ -1,15 +1,15 @@
 import java.io.File
 import java.io.IOException
 
-class Split() {
-    fun run(
-        nameOfFiles: Boolean,
-        sizeInLines: Int?,
-        sizeInChars: Int?,
-        countOfFiles: Int?,
-        nameOfOutFiles: String?,
-        inputFile: String?
-    ) {
+class Split(
+    private val nameOfFiles: Boolean,
+    private val sizeInLines: Int?,
+    private val sizeInChars: Int?,
+    private val countOfFiles: Int?,
+    private val nameOfOutFiles: String?,
+    private val inputFile: String?
+) {
+    fun run() {
         if (!File(inputFile!!).exists()) {
             throw IllegalArgumentException("Имя файла указано неверно")
         }
@@ -19,16 +19,17 @@ class Split() {
         ) {
             throw IOException("Одновременно указано несколько флагов управления размером")
         }
+
         val oFile = nameOfOutFiles(inputFile, nameOfOutFiles)
         val list = if (sizeInChars != null) {
-            chars(sizeInChars!!, inputFile)
+            chars(sizeInChars, inputFile)
         } else if (countOfFiles != null) {
-            count(countOfFiles!!, inputFile)
+            count(countOfFiles, inputFile)
         } else {
             lines(sizeInLines!!, inputFile)
         }
         if (nameOfFiles) {
-            for (i in 1..list.size + 1) {
+            for (i in 1..list.size) {
                 val file = File(oFile + "$i")
                 file.createNewFile()
                 file.writeText(list[i - 1])
@@ -36,7 +37,7 @@ class Split() {
         } else {
             var s1 = ""
             var s2 = ""
-            for (i in 0..list.size) {
+            for (i in list.indices) {
                 s1 = ('a' + i / 26).toString()
                 s2 = ('a' + i % 26).toString()
                 val file = File(oFile + "$s1$s2")
@@ -47,14 +48,14 @@ class Split() {
     }
 
     //    флаг -o
-    fun nameOfOutFiles(inputFile: String?, outputFile: String?): String {
+    private fun nameOfOutFiles(inputFile: String?, outputFile: String?): String {
         if (outputFile!!.isEmpty()) return "x"
         if (outputFile == "-") return inputFile!!
-        return outputFile!!
+        return outputFile
     }
 
     //    делим по линиям (флаг -l)
-    fun lines(sizeInLines: Int, inputFile: String?): ArrayList<String> {
+    private fun lines(sizeInLines: Int, inputFile: String?): ArrayList<String> {
         var count = 0
         var string = ""
         val list = arrayListOf<String>()
@@ -73,13 +74,13 @@ class Split() {
     }
 
     //    делим по символам (флаг -c)
-    fun chars(sizeInChars: Int, inputFile: String?): List<String> {
+    private fun chars(sizeInChars: Int, inputFile: String?): List<String> {
         val file = Regex("\r\n").replace(File(inputFile!!).readText(), "\n")
         return file.chunked(sizeInChars).toList()
     }
 
     //    делим по кол-ву файлов
-    fun count(countOfFiles: Int, inputFile: String?): List<String> {
+    private fun count(countOfFiles: Int, inputFile: String?): List<String> {
         val file = Regex("\r\n").replace(File(inputFile!!).readText(), "\n")
         var co = file.length / countOfFiles
         if (file.length % countOfFiles != 0) {
